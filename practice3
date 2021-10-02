@@ -1,0 +1,120 @@
+using System;
+using System.IO;
+namespace prack1
+{
+    class Program
+    {
+        static void Main()
+        {
+            string fileName = @"C:\Users\sasha\Desktop\data.txt";
+            var objeckt=new Accounting();
+            objeckt.Re4d(fileName);
+            //objeckt.Pr1nt();
+            //objeckt.Pr1ntOneApart(47);
+            objeckt.FindB1ggestDebt();
+            objeckt.ElectricityNotUsed();
+        }
+    }
+    public class Accounting
+    {
+        int count;
+        int quarter;
+        string[] month;
+        string[] surname;
+        int[] apartmentNumber;
+        double[] startMeter;
+        double[] endMeter;
+        public Accounting()
+        {
+            count = 0;
+            quarter = 0;
+        }
+        public void Re4d(string fileName)
+        {
+            using (StreamReader reader = File.OpenText(fileName)) 
+            {
+                string line;
+                int i = 0;
+                int j=-2;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    //Console.WriteLine(line);
+                    if (j >= 0)
+                    {
+                        i = j / 5;
+                        if (j % 5 == 0)
+                            apartmentNumber[i] = int.Parse(line);
+                        else if (j % 5 == 1)
+                            surname[i] = line;
+                        else if (j % 5 == 2)
+                            month[i] = line;
+                        else if (j % 5 == 3)
+                            startMeter[i] = double.Parse(line);
+                        else if (j % 5 == 4)
+                            endMeter[i] = double.Parse(line);
+                    }
+                    else if (j == -2)
+                    {
+                        count = int.Parse(line); ;
+                        count *= 3;
+                        month=new string[count];
+                        surname = new string[count];
+                        apartmentNumber = new int[count];
+                        startMeter=new double[count];
+                        endMeter = new double[count];
+                    }
+                    else if (j == -1)
+                    {
+                        quarter = int.Parse(line); ;
+                    }
+                    j++;
+                }
+            }
+        }
+        public void Pr1nt()
+        {
+            for(int i = 0; i < count; i++)
+            {
+                Console.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\n",apartmentNumber[i], month[i],surname[i],startMeter[i],endMeter[i]));
+                if (i % 3 == 2)
+                    Console.WriteLine("\n");
+            }
+        }
+        public void Pr1ntOneApart(int numb)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if(apartmentNumber[i]==numb)
+                    Console.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\n", apartmentNumber[i], month[i], surname[i], startMeter[i], endMeter[i]));
+            }
+        }
+        public void FindB1ggestDebt()
+        { 
+            int i = 0;
+            double max;
+            int numb=apartmentNumber[0];
+            max = (endMeter[0] + endMeter[1] + endMeter[2] - startMeter[0] - startMeter[1] - startMeter[2]);
+            for (int j = 0; j < count; j+=3)
+            {
+                if (max < endMeter[j] + endMeter[j + 1] + endMeter[j + 2] - startMeter[j] - startMeter[j + 1] - startMeter[j + 2])
+                {
+                    numb = apartmentNumber[i];
+                }
+                i++;
+            }
+            Pr1ntOneApart(numb);
+         }
+        public void ElectricityNotUsed()
+        {
+            int numb = apartmentNumber[0];
+           
+            for (int i = 0; i < count; i ++)
+            {
+                if ( (endMeter[i]- startMeter[i])==0)
+                {
+                    Console.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\n", apartmentNumber[i], month[i], surname[i], startMeter[i], endMeter[i]));
+                }
+            }
+        }
+    }
+}
